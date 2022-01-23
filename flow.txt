@@ -1,0 +1,12 @@
+This is my Restfull API for keeping record of Book by authenticate admin only
+
+Technology & Other Details for API	
+Python (Django Framework)
+Sqlite
+
+I have used serializer, rest_framework and other library of rest_framework for authentication
+used cors header to stop the block of cors-header call, so anyone can call the api cross platform
+
+Username and password for login is as follow:
+username:admin
+password:admin
