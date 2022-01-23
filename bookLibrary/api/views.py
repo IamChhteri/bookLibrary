@@ -10,9 +10,11 @@ from .models import Book
 from .serializers import bookSerializer
 from rest_framework.renderers import JSONRenderer
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.authentication import  TokenAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
+
+
 # Create your views here.
 
 
@@ -33,13 +35,20 @@ class BookStoreAPI(APIView):
 
     def get(self, request):
         # Get Data From db
+
+        if request.GET.get('id') is not None:
+            booksList = Book.objects.get(id=request.GET.get('id'))
+            serializer = bookSerializer(booksList, many=False)
+            json_data = JSONRenderer().render(serializer.data)
+            return HttpResponse(json_data, content_type='application/json')
+
         booksList = Book.objects.all()
         serializer = bookSerializer(booksList, many=True)
         json_data = JSONRenderer().render(serializer.data)
         return HttpResponse(json_data, content_type='application/json')
 
+    def post(self, request):
 
-    def post(self,request):
         # Check Whether Json is valid or not.
         try:
             pythonData = JSONParser().parse(request)
@@ -67,12 +76,12 @@ class BookStoreAPI(APIView):
             status = json.dumps(status)
             return HttpResponse(status, content_type='application/JSON')
 
-    def put(self,request):
+    def put(self, request):
         try:
             bookData = JSONParser().parse(request)
 
             #     # Get Data From db
-            booksList = Book.objects.get(name=bookData['name'])
+            booksList = Book.objects.get(id=bookData['id'])
             bookSerializerD = bookSerializer(booksList, data=bookData)
             if bookSerializerD.is_valid():
                 bookSerializerD.save()
@@ -86,19 +95,18 @@ class BookStoreAPI(APIView):
             status = json.dumps(status)
             return HttpResponse(status, content_type='application/JSON')
 
-    def delete(self,request):
-        try:
-            bookData = JSONParser().parse(request)
+    def delete(self, request):
 
+        try:
             #     # Get Data From db
-            booksList = Book.objects.get(name=bookData['name'])
+            booksList = Book.objects.get(id=request.GET.get('id'))
             booksList.delete()
-            status = {"flag": True, "reason": "Book Delete"}
+            status = {"flag": True, "reason": "Book Deleted"}
             status = json.dumps(status)
             return HttpResponse(status, content_type='application/JSON')
-
+        #
         except:
 
-            status = {"flag": False, "reason": "Wrong json/type"}
+            status = {"flag": False, "reason": "Wrong json/type Delete"}
             status = json.dumps(status)
             return HttpResponse(status, content_type='application/JSON')
