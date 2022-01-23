@@ -1,4 +1,4 @@
-# bookLibrary
+# Book Library API
 Restful API for Book Library
 
 This is my RESTFULL API for Book Library 
